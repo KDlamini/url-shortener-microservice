@@ -2,12 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
-var bodyParser = require('body-parser');
+let bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 //database connection
-mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+let uri = mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
@@ -32,10 +32,11 @@ let urlSchema = new Schema({
 
 const Url = mongoose.model('Url', urlSchema);
 
-app.post('api/shorturl/new', bodyParser.urlencoded({extended: false}) , (req, res) => {
-  
-  console.log(req.body);
-  res.json({})
+app.post('/api/shorturl/new', bodyParser.urlencoded({extended: false}) , (req, res) => {
+  res.json({
+    "original_url": req.body["url"],
+    "short_url": 1
+  })
 })
 
 app.listen(port, function() {
