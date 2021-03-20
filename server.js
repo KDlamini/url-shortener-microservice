@@ -41,25 +41,39 @@ app.post('/api/shorturl/new', (req, res) => {
 
   if(requested_url) {
 
-    let suffix = shortid.generate();
-    let shorturl = suffix;
-
-    let url_document = new Url({
-      original_url: requested_url,
-      short_url: shorturl
-    });
-
-    url_document.save((error, doc) => {
+    Url.findOne({original_url: requested_url}, (error, result) => {
       if(error) {
         console.log(error);
+      }
+      else if(result == null) {
+        let suffix = shortid.generate();
+        let shorturl = suffix;
+
+        let url_document = new Url({
+          original_url: requested_url,
+          short_url: shorturl
+        });
+
+        url_document.save((error, doc) => {
+          if(error) {
+            console.log(error);
+          } else {
+            console.log("Successfuly saved document!")
+            res.json({
+              original_url: doc.original_url,
+              short_url: doc.short_url
+            })
+          }
+        });
+      
       } else {
-        console.log("Successfuly saved document!")
         res.json({
-          original_url: doc.original_url,
-          short_url: doc.short_url
+          original_url: result.original_url,
+          short_url: result.short_url
         })
       }
     });
+
   } else {
     res.json({ error: 'invalid url' });
   }
