@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const shortid = require('shortid');
 const validate = require('url-validator');
 const mongoose = require('mongoose');
@@ -17,6 +16,9 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 
 app.use('/public', express.static(`${process.cwd()}/public`));
+
+app.use(express.urlencoded());
+app.use(express.json());
 
 app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
@@ -34,7 +36,7 @@ let urlSchema = new Schema({
 
 const Url = mongoose.model('Url', urlSchema);
 
-app.post('/api/shorturl/new', bodyParser.urlencoded({extended: false}) , (req, res) => {
+app.post('/api/shorturl/new', (req, res) => {
   let requested_url = validate(req.body.url);
 
   if(requested_url) {
